@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="feed">
+        {% if questions %}
+        {% for question in questions %}
+        <a  class="feed-item-link" href="{% url 'single_question' question_slug=question.question_slug %}">
+            <div class="feed-item card">
+                    <div class="card-body">
+                        <h5>{{ question.question_title }}</h5>
+                        <hr>
+                        <div class="row feet-item-sub-info">
+                            <div class="col-sm-2">{{ question.asked_by }}</div>
+                            <div class="col-sm-3">{{ question.created_at }}</div>
+                            <div class="col-sm-5"></div>
+                            {% if question.answers.count %}
+                                <div class="col-sm">Answeres: {{ question.answers.count }}</div>
+                            {% else %}
+                                <div class="col-sm"><b>No answers yet</b></div>
+                            {% endif %}
+                        </div>
+                    </div>
+            </div>
+        </a>
+        {% endfor %}
+
+        {% else %}
+        <div class="feet-item card">
+            <div class="card-body">
+                <p>No Questions Yet</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}

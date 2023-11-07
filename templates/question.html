@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="feed">
+    <div class="feed-item card">
+        <div class="card-body">
+            <h5>{{ question.question_title }}</h5>
+            <hr>
+            <div class="row feet-item-sub-info">
+                <div class="col-sm-2">{% if  question.asked_by == request.user %} You {% else %} {{ question.asked_by }} {% endif %}</div>
+                <div class="col-sm-4">{{ question.created_at }}</div>
+                <div class="col-sm-2"></div>
+                {% if question.answers.count %}
+                    <div class="col-sm">Answeres: {{ question.answers.count }}</div>
+                {% else %}
+                    <div class="col-sm"><b>no answers yet</b></div>
+                {% endif %}
+            </div>
+        </div>
+        </div>
+    </div>
+       
+    <div class="feed ">
+        {% if  question.asked_by != request.user %}
+        <div class="row">
+            <div class="col-sm"></div>
+            <div class="col-sm-4">
+                <a class="feed-item-link" onclick="showAnswerForm()"><i class="fa-solid fa-pen-to-square"></i> Answer this question</a>
+            </div>
+            <div class="container answer-form mb-5" id="add-answer-form">
+                <form action="{% url 'single_question_answers' question_slug=question.question_slug %}" method="post">
+                    <div class="form-group mb-3">
+                        <textarea class="form-control" rows="5" id="comment" name="answer_detail" placeholder="Your Answer" required></textarea>
+                      </div>
+                      <div class="row">
+                        <div class="col-sm-4"></div>
+                        <div class="col-sm">
+                            <button type="submit" class="btn btn-success">Add</button>
+                        </div>
+                        <div class="col-sm">
+                            <button class="btn btn-danger" onclick="hideAnswerForm()">Close</button>
+                        </div>
+                        <div class="col-sm-4"></div>
+                      </div>
+                </form>
+
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if question.answers.count > 0 %}
+        <div class="answer">
+            {% for answer in question.answers.all %}
+                <div class="answer-item card">
+                <div class="card-body">
+                    <p>{{ answer.answer_detail }}</p>
+                    <hr>
+                    <div class="row feet-item-sub-info">
+
+                        {% if request.user in answer.liked_by.all %}
+                             <div class="col-sm-2 answer-item-thumb">
+                                <a class="feed-item-link" href="{% url 'answer_response' question_slug=question.question_slug  ans_id=answer.id resp=1 count=-1 %}"><i class="fa-solid fa-thumbs-up"></i>: {{ answer.liked_by.count }}</a></div>
+                        {% else %}
+                            <div class="col-sm-2 answer-item-thumb">
+                                <a class="feed-item-link" href="{% url 'answer_response' question_slug=question.question_slug  ans_id=answer.id resp=1 count=1 %}" ><i class="fa-regular fa-thumbs-up"></i>: {{ answer.liked_by.count }}</a> </div>
+                        {% endif %}
+                        
+                        {% if request.user in answer.disliked_by.all %}
+                            <div class="col-sm-2 answer-item-thumb">
+                                <a class="feed-item-link" href="{% url 'answer_response' question_slug=question.question_slug  ans_id=answer.id resp=-1 count=-1 %}" ><i class="fa-solid fa-thumbs-down"></i>: {{ answer.disliked_by.count }}</a></div>
+                        {% else %}
+                            <div class="col-sm-2 answer-item-thumb">
+                                <a class="feed-item-link" href="{% url 'answer_response' question_slug=question.question_slug  ans_id=answer.id resp=-1 count=1 %}" ><i class="fa-regular fa-thumbs-down"></i>: {{ answer.disliked_by.count }}</a></div>
+                        {% endif %}
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm">{{ answer.answer_by }}</div>
+                        <div class="col-sm">{{ answer.updated_at }}</div>
+                    </div>
+                </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        
+        {% else %}
+        <div class="feet-item card">
+            <div class="card-body">
+                <p>No Answeres yet</p>
+            </div>
+        </div>
+        {% endif %}
+    
+    </div>
+    
+    <script>
+        function showAnswerForm() {
+            document.getElementById('add-answer-form').style.display='block';
+        }
+        function hideAnswerForm() {
+            document.getElementById('add-answer-form').style.display='none';
+        }
+    </script>
+    
+    {% endblock %}
