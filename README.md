@@ -1,5 +1,5 @@
 ## Quora Lite
-A simple replica of Quora.
+A simple django app similar to Quora.
 
 
 ### Demo
